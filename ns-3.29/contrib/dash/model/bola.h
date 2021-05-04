@@ -17,7 +17,7 @@ namespace ns3 {
 
     private:
 
-        const int64_t m_highestRepIndex;
+	const int64_t m_highestRepIndex;
         int64_t m_lastRepIndex;
 
         const int BOLA_STATE_INIT = -1;

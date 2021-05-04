@@ -263,7 +263,7 @@ TcpStreamClient::Initialise (std::string algorithm, uint16_t clientId)
     }
   else if (algorithm == "bola")
     {
-      algo = new newAdaptationAlgorithm(m_videoData, m_playbackData, m_bufferData, m_throughput);
+      algo = new BolaAlgo(m_videoData, m_playbackData, m_bufferData, m_throughput);
     }      
   else
     {

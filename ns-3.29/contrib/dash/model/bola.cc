@@ -1,5 +1,5 @@
 /**
-Bola ABR (based on dash.js implementation)
+  Bola ABR (based on dash.js implementation)
 **/
 
 #include "bola.h"
@@ -15,8 +15,7 @@ namespace ns3 {
                        const bufferData& bufferData, 
                        const throughputData& throughput) : 
         AdaptationAlgorithm(videoData, playbackData, bufferData, throughput), 
-        m_highestRepIndex(videoData.averageBitrate.size() - 1)
-    {
+        m_highestRepIndex(videoData.averageBitrate.size() - 1) {
         NS_LOG_INFO(this);
         NS_ASSERT_MSG(m_highestRepIndex >= 0, "The highest quality representation index should be >= 0");
     }
@@ -29,8 +28,7 @@ namespace ns3 {
         int64_t bDelay = 0;
         const int64_t timeNow = Simulator::Now().GetMicroSeconds();
 
-        if (segmentCounter == 0) 
-        {
+        if (segmentCounter == 0) {
             segDuration = m_videoData.segmentDuration;
             m_lastRepIndex = nextRepIndex;
             algorithmReply answer;
@@ -59,7 +57,6 @@ namespace ns3 {
             calculateBolaParameters();
 
             state = BOLA_STATE_STARTUP;
-
         }
 
         double throughput = AverageSegmentThroughput(segmentCounter) / 1000;
@@ -69,13 +66,11 @@ namespace ns3 {
             int quality = getQualityForBitrate(throughput);
 
             nextRepIndex = quality;
-
             double bufferLevel = (m_bufferData.bufferLevelNew.back() / (double)1000000 - (timeNow - m_bufferData.timeNow.back()) / (double)1000000);
 
             if (bufferLevel >= (segDuration / 1000000)) {
                 state = BOLA_STATE_STEADY;
             }
-
         }
         else if (state == BOLA_STATE_STEADY) {
 
@@ -118,11 +113,11 @@ namespace ns3 {
             sumThroughput += m_throughput.bytesReceived.at(index);
             transmissionTime += lengthOfInterval;
             count++;
-            if (count > 4) 
-                break;
+            if (count > 4) break;
         }
-     
+
         return (sumThroughput * 8 / (double)transmissionTime);
+
     }
 
     void BolaAlgo::calculateBolaParameters() {
@@ -179,7 +174,14 @@ namespace ns3 {
         int quality = m_highestRepIndex;
         for (int i = 0; i <= m_highestRepIndex; i++) {
             if (bitrate <= bitrates[i]) {
-                quality = i - 1;
+                if (i == 0)
+                {
+                    quality = i;
+                }
+                else
+                {
+                    quality = i - 1;
+                }
                 break;
             }
         }
