@@ -10,7 +10,7 @@ def build(bld):
         'model/festive.cc',
         'model/panda.cc',
         'model/tobasco2.cc',
-        'model/newAdaptationAlgorithm.cc',
+        'model/fastScan.cc',
         'helper/tcp-stream-helper.cc',
         ]
 
@@ -24,7 +24,7 @@ def build(bld):
         'model/festive.h',
         'model/panda.h',
         'model/tobasco2.h',
-        'model/newAdaptationAlgorithm.h',
+        'model/fastScan.h',
         'helper/tcp-stream-helper.h',
         ]
 

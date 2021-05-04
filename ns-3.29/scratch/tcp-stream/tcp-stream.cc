@@ -61,6 +61,7 @@ main (int argc, char *argv[])
    LogComponentEnable ("TcpStreamExample", LOG_LEVEL_INFO);
    LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_INFO);
    LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_INFO);
+   LogComponentEnable ("FastScanAlgorithm", LOG_LEVEL_INFO);
 // #endif
 
   uint64_t segmentDuration;

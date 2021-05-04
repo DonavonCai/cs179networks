@@ -41,10 +41,17 @@ namespace ns3 {
 class AdaptationAlgorithm : public Object
 {
 public:
+  
   AdaptationAlgorithm ( const videoData &videoData,
                         const playbackData & playbackData,
                         const bufferData & bufferData,
-                        const throughputData & throughput  );
+                        const throughputData & throughput );
+/*
+  AdaptationAlgorithm ( const videoData &videoData,
+                        const playbackData & playbackData,
+                        const bufferData & bufferData,
+                        const throughputData & throughput,
+                        const bufferUnderrunData & bufferUnderrun );*/
 
   /**
    * \ingroup tcpStream

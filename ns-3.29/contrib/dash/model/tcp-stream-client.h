@@ -31,7 +31,7 @@
 #include "tobasco2.h"
 #include "festive.h"
 #include "panda.h"
-#include "newAdaptationAlgorithm.h"
+#include "fastScan.h"
 
 namespace ns3 {
 
@@ -289,7 +289,6 @@ private:
   bufferData m_bufferData; //!< Keep track of the buffer level
   playbackData m_playbackData; //!< Tracking the simulated playback of segments
   videoData m_videoData; //!< Information about segment sizes, average bitrates of representation levels and segment duration in microseconds
-
 };
 
 } // namespace ns3

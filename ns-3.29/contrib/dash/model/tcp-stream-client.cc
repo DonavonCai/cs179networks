@@ -257,9 +257,9 @@ TcpStreamClient::Initialise (std::string algorithm, uint16_t clientId)
     {
       algo = new FestiveAlgorithm (m_videoData, m_playbackData, m_bufferData, m_throughput);
     }
-  else if (algorithm == "new")
+  else if (algorithm == "fastscan")
     {
-      algo = new newAdaptationAlgorithm(m_videoData, m_playbackData, m_bufferData, m_throughput);
+      algo = new FastScanAlgorithm(m_videoData, m_playbackData, m_bufferData, m_throughput);
     }
   else
     {
