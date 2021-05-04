@@ -32,6 +32,7 @@
 #include "festive.h"
 #include "panda.h"
 #include "newAdaptationAlgorithm.h"
+#include "bola.h"
 
 namespace ns3 {
 

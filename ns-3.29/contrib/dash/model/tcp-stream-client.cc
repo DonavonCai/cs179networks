@@ -261,6 +261,10 @@ TcpStreamClient::Initialise (std::string algorithm, uint16_t clientId)
     {
       algo = new newAdaptationAlgorithm(m_videoData, m_playbackData, m_bufferData, m_throughput);
     }
+  else if (algorithm == "bola")
+    {
+      algo = new newAdaptationAlgorithm(m_videoData, m_playbackData, m_bufferData, m_throughput);
+    }      
   else
     {
       NS_LOG_ERROR ("Invalid algorithm name entered. Terminating.");

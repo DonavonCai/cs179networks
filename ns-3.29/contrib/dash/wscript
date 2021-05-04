@@ -11,6 +11,7 @@ def build(bld):
         'model/panda.cc',
         'model/tobasco2.cc',
         'model/newAdaptationAlgorithm.cc',
+	'model/bola.cc',
         'helper/tcp-stream-helper.cc',
         ]
 
@@ -25,6 +26,7 @@ def build(bld):
         'model/panda.h',
         'model/tobasco2.h',
         'model/newAdaptationAlgorithm.h',
+	'model/bola.h',
         'helper/tcp-stream-helper.h',
         ]
 
