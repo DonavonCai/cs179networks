@@ -84,7 +84,7 @@ algorithmReply MPCAlgo::GetNextRep ( const int64_t segmentCounter, int64_t clien
 	double max_reward = -100000000;
 	double start_buffer = (m_bufferData.bufferLevelNew.back ()/ (double)1000000 - (timeNow - m_bufferData.timeNow.back())/ (double)1000000);
 	nextRepIndex = (int)m_lastRepIndex;
-	int possibleCombos = (int)std::pow(5.0, m_highestRepIndex+1);
+	int possibleCombos = (int)std::pow(m_highestRepIndex+1, 5.0);
 	int combos[possibleCombos+1][5];
 	count = 0;
 	for(int i=0; i<=m_highestRepIndex; i++) {
@@ -104,7 +104,7 @@ algorithmReply MPCAlgo::GetNextRep ( const int64_t segmentCounter, int64_t clien
 		}
 	}
 
-	for(int i=0; i<10; i++) {
+	for(int i=0; i<possibleCombos; i++) {
 		double curr_rebuffer_time = 0;
 		double a = (double)segDuration/1000000;
 		double curr_buffer = start_buffer-a;
@@ -125,12 +125,11 @@ algorithmReply MPCAlgo::GetNextRep ( const int64_t segmentCounter, int64_t clien
 			smoothness_diffs += abs((m_videoData.averageBitrate.at(chunk_quality)/1000) - (m_videoData.averageBitrate.at(last_quality)/1000));
 			last_quality = chunk_quality;
 		}
-
+		
 		double reward = (bitrate_sum/1000) - (REBUF_PENALTY*curr_rebuffer_time) - (SMOOTH_PENALTY*smoothness_diffs/1000);
 		if ( reward >= max_reward ) {
 			max_reward = reward;
 			nextRepIndex = combos[i][0];
-			break;
 		}
 	}
 	m_lastRepIndex = nextRepIndex;
