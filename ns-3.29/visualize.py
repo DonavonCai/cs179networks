@@ -80,7 +80,7 @@ plt.tight_layout()
 axis[0].plot(adaptationX, adaptationY)
 axis[0].set_title("Requested Quality vs. Segment Index")
 axis[0].set(xlabel="Segment Index", ylabel="Requested Quality")
-axis[0].xaxis.set_major_locator(MaxNLocator(15))
+axis[0].xaxis.set_major_locator(MaxNLocator(integer=True))
 
 axis[1].plot(bufferX, bufferY)
 axis[1].set_title("Buffer Level over Time")
