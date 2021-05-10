@@ -33,6 +33,7 @@
 #include "panda.h"
 #include "newAdaptationAlgorithm.h"
 #include "bola.h"
+#include "mpc.h"
 
 namespace ns3 {
 

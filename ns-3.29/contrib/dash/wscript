@@ -12,6 +12,7 @@ def build(bld):
         'model/tobasco2.cc',
         'model/newAdaptationAlgorithm.cc',
 	'model/bola.cc',
+        'model/mpc.cc',
         'helper/tcp-stream-helper.cc',
         ]
 
@@ -27,6 +28,7 @@ def build(bld):
         'model/tobasco2.h',
         'model/newAdaptationAlgorithm.h',
 	'model/bola.h',
+	'model/mpc.h',
         'helper/tcp-stream-helper.h',
         ]
 
