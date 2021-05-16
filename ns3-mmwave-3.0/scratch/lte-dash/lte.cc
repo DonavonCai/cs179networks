@@ -51,14 +51,8 @@ using namespace mmwave;
 NS_LOG_COMPONENT_DEFINE ("LteTcpStreamExample");
 
 /* 
- * This code runs, but no log files are generated
- * I think we need to check for the following reasons:
- * 
- * routing table implementation (used the one in mmwave-simple-epc instead of tcp-stream)
- * dash implementation may not work with the mobility model (might require a building?)
- * are the ports set correctly?
- * TODO: replace UdpHelpers with TcpStreamHelpers (currently have both)
- *    This is probably why it's not working but it's also 2am so i'll do this tomorrow
+ * Log files are created, but I think nodes might not be connected correctly
+ * Simulation either gets stuck, or runs extremely slowly...
  */
 
 int
@@ -67,7 +61,7 @@ main (int argc, char *argv[])
    const double MIN_DISTANCE = 10.0; // eNB-UE distance in meters
    const double MAX_DISTANCE = 150.0; // eNB-UE distance in meters
    double simTime = 1.0;
-   double interPacketInterval = 100;
+//   double interPacketInterval = 100;
 
    LogComponentEnable ("LteTcpStreamExample", LOG_LEVEL_INFO);
    LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_INFO);
@@ -128,7 +122,7 @@ main (int argc, char *argv[])
    NS_LOG_INFO ("Configuring Ipv4.");
    // Configure Ipv4
    Ipv4AddressHelper ipv4h;
-   ipv4h.SetBase ("76.1.1.0", "255.255.255.0");
+   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
    // Interface
    Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
    // interface 0 is localhost, 1 is the p2p device
@@ -137,20 +131,16 @@ main (int argc, char *argv[])
    NS_LOG_INFO ("Routing.");
    // Set up routing
    // TODO: check if this works correctly
-   // mmwave-simple-epc.cc routing:
    Ipv4StaticRoutingHelper ipv4RoutingHelper;
    Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
    remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
-   // tcp-stream.cc routing: (this produces error for some reason)
-//   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-//   uint16_t port = 9;
 
    NS_LOG_INFO ("Setting up eNBs and UEs.");
    // Create UEs and eNBs
    NodeContainer enbNodes;
    NodeContainer ueNodes;
-   // create 1 enb and for now
+   // create 1 enb for now
    enbNodes.Create (1/*numEnb*/);
    ueNodes.Create (numberOfClients);
 
@@ -191,7 +181,7 @@ main (int argc, char *argv[])
    Ipv4InterfaceContainer ueIpIface;
    ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (uemmWaveDevs));
 
-   NS_LOG_INFO ("Assigning IP addresses, installing applications.");
+   NS_LOG_INFO ("Assigning IP addresses.");
    // Assign IP address to UEs, and install applications
    for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
      {
@@ -215,113 +205,54 @@ main (int argc, char *argv[])
    const char * dir = dirstr.c_str();
    mkdir(dir, 0775);
 
-/*
+
    std::ofstream clientPosLog;
    std::string clientPos = dashLogDirectory + "/" + adaptationAlgo + "/" + ToString (numberOfClients) + "/" + "sim" + ToString (simulationId) + "_"  + "clientPos.txt";
    clientPosLog.open (clientPos.c_str());
    NS_ASSERT_MSG (clientPosLog.is_open(), "Couldn't open clientPosLog file");
-   //////////////////////////////////////////////////////////////////////////////////////////////////
-   //// Set up Building
-   //////////////////////////////////////////////////////////////////////////////////////////////////
-     double roomHeight = 3;
-     double roomLength = 6;
-     double roomWidth = 5;
-     uint32_t xRooms = 8;
-     uint32_t yRooms = 3;
-     uint32_t nFloors = 6;
-
-     Ptr<Building> b = CreateObject <Building> ();
-     b->SetBoundaries (Box ( 0.0, xRooms * roomWidth,
-                             0.0, yRooms * roomLength,
-                             0.0, nFloors * roomHeight));
-     b->SetBuildingType (Building::Office);
-     b->SetExtWallsType (Building::ConcreteWithWindows);
-     b->SetNFloors (6);
-     b->SetNRoomsX (8);
-     b->SetNRoomsY (3);
-
-     BuildingsHelper::Install (enbNodes);
-     BuildingsHelper::Install (ueNodes);
-     BuildingsHelper::Install (remoteHost);
-*/
-     /*
-     Vector posAp = Vector ( 1.0, 1.0, 1.0);
-     // give the server node any position, it does not have influence on the simulation, it has to be set though,
-     // because when we do: mobility.Install (networkNodes);, there has to be a position as place holder for the server
-     // because otherwise the first client would not get assigned the desired position.
-     Vector posServer = Vector (1.5, 1.5, 1.5);
-
-     // Set up positions of nodes (AP and server)
-     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-     positionAlloc->Add (posAp);
-     positionAlloc->Add (posServer);
-     */
-/*
-     Ptr<RandomRoomPositionAllocator> randPosAlloc = CreateObject<RandomRoomPositionAllocator> ();
-     randPosAlloc->AssignStreams (simulationId);
-
-     // FIXME: Do we need to log client positions for the sim to run?
-     // allocate clients to positions
-     for (uint i = 0; i < numberOfClients; i++)
-       {
-         Vector pos = Vector (randPosAlloc->GetNext());
-         uePositionAlloc->Add (pos);
-
-         // log client positions
-         clientPosLog << ToString(pos.x) << ", " << ToString(pos.y) << ", " << ToString(pos.z) << "\n";
-         clientPosLog.flush ();
-       }
-*/
-   NS_LOG_INFO ("Installing applications on UEs and remoteHost.");
-   // Install and start applications on UEs and remote host
-   uint16_t dlPort = 1234;
-   uint16_t ulPort = 2000;
-   uint16_t otherPort = 3000;
-   ApplicationContainer clientApps;
-   ApplicationContainer serverApps;
 
 
-   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+   // Do we need to log client positions for the sim to run?
+   // Log client positions
+   for (uint i = 0; i < numberOfClients; i++)
      {
-       ++ulPort;
-       ++otherPort;
-       PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-       PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), otherPort));
-       serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get (u)));
-       serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
-       serverApps.Add (packetSinkHelper.Install (ueNodes.Get (u)));
-
-       UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort);
-       dlClient.SetAttribute ("Interval", TimeValue (MicroSeconds (interPacketInterval)));
-       dlClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
-
-       UdpClientHelper ulClient (remoteHostAddr, ulPort);
-       ulClient.SetAttribute ("Interval", TimeValue (MicroSeconds (interPacketInterval)));
-       ulClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
-
-       clientApps.Add (dlClient.Install (remoteHost));
-       clientApps.Add (ulClient.Install (ueNodes.Get(u)));
+	   Vector pos = Vector (uePositionAlloc->GetNext());
+	   // log client positions
+	   clientPosLog << ToString(pos.x) << ", " << ToString(pos.y) << ", " << ToString(pos.z) << "\n";
+	   clientPosLog.flush ();
      }
-   serverApps.Start (Seconds (0.1));
-//   clientApps.Start (Seconds (0.1));
-//   mmwaveHelper->EnableTraces ();
-   // Uncomment to enable PCAP tracing
-//   p2p.EnablePcapAll ("mmwave-epc-simple");
 
-   /* Install TCP Receiver on the access point */
-   TcpStreamServerHelper serverHelper (ulPort/*port*/);
+   NS_LOG_INFO ("Installing TCP Receiver on the remoteHost.");
+   uint16_t port = 9;
+   // Install TCP Receiver on the remote host
+   TcpStreamServerHelper serverHelper (port);
    ApplicationContainer serverApp = serverHelper.Install (remoteHost);
-   serverApp.Start (Seconds (0.1));
-//   clientApps.Start (Seconds (0.1));
-   /* Install TCP/UDP Transmitter on the station */
-   TcpStreamClientHelper clientHelper (remoteHostAddr, ulPort);
+   serverApp.Start (Seconds (1.0));
+
+   NS_LOG_INFO("Installing TCP Transmitter on remoteHost.");
+   ApplicationContainer clientApps;
+   // Install TCP/UDP Transmitter on the remote host
+   TcpStreamClientHelper clientHelper (remoteHostAddr, port);
    clientHelper.SetAttribute ("SegmentDuration", UintegerValue (segmentDuration));
    clientHelper.SetAttribute ("SegmentSizeFilePath", StringValue (segmentSizeFilePath));
    clientHelper.SetAttribute ("NumberOfClients", UintegerValue(numberOfClients));
    clientHelper.SetAttribute ("SimulationId", UintegerValue (simulationId));
 
-   for (uint i = 0; i < ueNodes.GetN (); i++)
+   NS_LOG_INFO("Assigning adaptation algorithms to clients.");
+   // Determine client nodes for object creation with client helper class
+   std::vector <std::pair <Ptr<Node>, std::string> > clients;
+   for (NodeContainer::Iterator i = ueNodes.Begin (); i != ueNodes.End (); ++i)
+     {
+       std::pair <Ptr<Node>, std::string> client (*i, adaptationAlgo);
+       clients.push_back (client);
+     }
+
+   NS_LOG_INFO("Installing client apps.");
+   clientApps = clientHelper.Install (clients);
+
+   NS_LOG_INFO("Setting start time for client apps.");
+   // Set start time for all client applications
+   for (uint i = 0; i < clientApps.GetN (); i++)
      {
        double startTime = 2.0 + ((i * 3) / 100.0);
        clientApps.Get (i)->SetStartTime (Seconds (startTime));
