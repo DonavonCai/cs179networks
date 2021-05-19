@@ -51,8 +51,7 @@ using namespace mmwave;
 NS_LOG_COMPONENT_DEFINE ("LteTcpStreamExample");
 
 /* 
- * Log files are created, but I think nodes might not be connected correctly
- * Simulation either gets stuck, or runs extremely slowly...
+ * FIXME: ServerApp and ClientApps never start. Something wrong with scheduling?
  */
 
 int
@@ -60,12 +59,13 @@ main (int argc, char *argv[])
 {
    const double MIN_DISTANCE = 10.0; // eNB-UE distance in meters
    const double MAX_DISTANCE = 150.0; // eNB-UE distance in meters
-   double simTime = 1.0;
+//   double simTime = 1.0;
 //   double interPacketInterval = 100;
 
-   LogComponentEnable ("LteTcpStreamExample", LOG_LEVEL_INFO);
-   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_INFO);
-   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_INFO);
+   //LogComponentEnable ("LteTcpStreamExample", LOG_LEVEL_INFO);
+   LogComponentEnable ("MmWaveHelper", LOG_LEVEL_ALL);
+   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_ALL);
+   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_ALL);
 
    // Get input
    uint64_t segmentDuration;
@@ -112,7 +112,8 @@ main (int argc, char *argv[])
    NS_LOG_INFO ("Creating P2PHelper.");
    // P2P helper
    PointToPointHelper p2p;
-   p2p.SetDeviceAttribute ("DataRate", StringValue ("100000kb/s")); // This must not be more than the maximum throughput in 802.11n
+   // FIXME: 802.11n is for WLAN, can we increase DataRate here?
+   p2p.SetDeviceAttribute ("DataRate", StringValue ("100Gb/s")); // This must not be more than the maximum throughput in 802.11n
    p2p.SetDeviceAttribute ("Mtu", UintegerValue (1500));
    p2p.SetChannelAttribute ("Delay", StringValue ("45ms"));
 
@@ -156,7 +157,6 @@ main (int argc, char *argv[])
    // Install UE mobility model (I think ue's are randomly placed and static)
    MobilityHelper uemobility;
    Ptr<ListPositionAllocator> uePositionAlloc = CreateObject<ListPositionAllocator> ();
-//   uePositionAlloc->Add (Vector (1.5, 1.5, 1.5));
    Ptr<UniformRandomVariable> distRv = CreateObject<UniformRandomVariable> ();
 
    // We have 3 UE's for now
@@ -230,7 +230,7 @@ main (int argc, char *argv[])
    serverApp.Start (Seconds (1.0));
 
    NS_LOG_INFO("Installing TCP Transmitter on remoteHost.");
-   ApplicationContainer clientApps;
+
    // Install TCP/UDP Transmitter on the remote host
    TcpStreamClientHelper clientHelper (remoteHostAddr, port);
    clientHelper.SetAttribute ("SegmentDuration", UintegerValue (segmentDuration));
@@ -248,7 +248,9 @@ main (int argc, char *argv[])
      }
 
    NS_LOG_INFO("Installing client apps.");
+   ApplicationContainer clientApps;
    clientApps = clientHelper.Install (clients);
+
 
    NS_LOG_INFO("Setting start time for client apps.");
    // Set start time for all client applications
@@ -259,7 +261,7 @@ main (int argc, char *argv[])
      }
 
    NS_LOG_INFO ("Run Simulation.");
-   Simulator::Stop (Seconds (simTime + 30.0));
+   //Simulator::Stop (Seconds (simTime + 30.0));
    //NS_LOG_INFO ("Sim: " << simulationId << "Clients: " << numberOfClients);
    Simulator::Run ();
    Simulator::Destroy ();

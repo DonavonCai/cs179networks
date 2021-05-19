@@ -59,8 +59,8 @@ main (int argc, char *argv[])
 //
 // #if 1
    LogComponentEnable ("TcpStreamExample", LOG_LEVEL_INFO);
-   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_INFO);
-   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_INFO);
+   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_ALL);
+   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_ALL);
 // #endif
 
   uint64_t segmentDuration;
@@ -280,7 +280,6 @@ main (int argc, char *argv[])
     {
       double startTime = 2.0 + ((i * 3) / 100.0);
       clientApps.Get (i)->SetStartTime (Seconds (startTime));
-      //clientApps.Get (i)->SetStopTime (Seconds (startTime + 5.0));
     }
 
 

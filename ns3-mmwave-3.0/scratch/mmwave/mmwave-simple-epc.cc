@@ -51,6 +51,8 @@ NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
 int
 main (int argc, char *argv[])
 {
+  LogComponentEnable ("MmWaveHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("PacketSink", LOG_LEVEL_ALL);
   uint16_t numEnb = 1;
   uint16_t numUe = 1;
   double simTime = 2.0;
