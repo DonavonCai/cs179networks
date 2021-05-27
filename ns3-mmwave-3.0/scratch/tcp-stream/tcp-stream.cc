@@ -276,12 +276,14 @@ main (int argc, char *argv[])
   clientHelper.SetAttribute ("NumberOfClients", UintegerValue(numberOfClients));
   clientHelper.SetAttribute ("SimulationId", UintegerValue (simulationId));
   ApplicationContainer clientApps = clientHelper.Install (clients);
+  clientApps.Start (Seconds (1.5));
+  /*
   for (uint i = 0; i < clientApps.GetN (); i++)
     {
       double startTime = 2.0 + ((i * 3) / 100.0);
       clientApps.Get (i)->SetStartTime (Seconds (startTime));
     }
-
+  */
 
   NS_LOG_INFO ("Run Simulation.");
   NS_LOG_INFO ("Sim: " << simulationId << "Clients: " << numberOfClients);

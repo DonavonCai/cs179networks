@@ -55,6 +55,16 @@ std::string ToString(T val)
 
 NS_LOG_COMPONENT_DEFINE ("LteTcpStreamExample");
 
+static void
+CourseChange (std::string context, Ptr<const MobilityModel> mobility)
+{
+  Vector pos = mobility->GetPosition ();
+  Vector vel = mobility->GetVelocity ();
+  std::cout << Simulator::Now () << ", model=" << mobility << ", POS: x=" << pos.x << ", y=" << pos.y
+            << ", z=" << pos.z << "; VEL:" << vel.x << ", y=" << vel.y
+            << ", z=" << vel.z << std::endl;
+}
+
 /* 
  * FIXME: ServerApp and ClientApps start, but run slowly.
  * Multiple clients doesn't seem to run correctly. Not sure what's wrong.
@@ -70,45 +80,31 @@ main (int argc, char *argv[])
 //   double interPacketInterval = 100;
 
    LogComponentEnable ("LteTcpStreamExample", LOG_LEVEL_INFO);
-   LogComponentEnable ("MmWaveHelper", LOG_LEVEL_INFO);
-   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_ALL);
-   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_ALL);
-   LogComponentEnable ("BolaAlgo", LOG_LEVEL_DEBUG);
+//   LogComponentEnable ("MmWaveHelper", LOG_LEVEL_ALL);
+//   LogComponentEnable ("TcpStreamClientApplication", LOG_LEVEL_ALL);
+//   LogComponentEnable ("TcpStreamServerApplication", LOG_LEVEL_ALL);
 
-   LogComponentEnable ("PacketSink", LOG_LEVEL_ALL);
-   LogComponentEnable ("UdpClient", LOG_LEVEL_INFO);
+//   LogComponentEnable ("PacketSink", LOG_LEVEL_ALL);
+//   LogComponentEnable ("UdpClient", LOG_LEVEL_INFO);
+
+//   LogComponentEnable ("MobilityHelper", LOG_LEVEL_ALL);
+//   LogComponentEnable ("RandomDirection2dMobilityModel", LOG_LEVEL_ALL);
 
    // Get input
-   uint64_t segmentDuration;
-   uint32_t simulationId;
-   uint32_t numberOfClients;
+   uint64_t segmentDuration = 2000000;
+   uint32_t simulationId = 1;
+   uint32_t numberOfClients = 1;
    std::string adaptationAlgo;
-   std::string segmentSizeFilePath;
+   std::string segmentSizeFilePath = "contrib/dash/segmentSizes.txt";
 
    CommandLine cmd;
    cmd.Usage ("Simulation of streaming with DASH.\n");
-   cmd.AddValue ("simulationId", "The simulation's index (for logging purposes)", simulationId);
-   cmd.AddValue ("numberOfClients", "The number of clients", numberOfClients);
-   cmd.AddValue ("segmentDuration", "The duration of a video segment in microseconds", segmentDuration);
    cmd.AddValue ("adaptationAlgo", "The adaptation algorithm that the client uses for the simulation", adaptationAlgo);
-   cmd.AddValue ("segmentSizeFile", "The relative path (from ns-3.x directory) to the file containing the segment sizes in bytes", segmentSizeFilePath);
    cmd.Parse (argc, argv);
 
-
-   // I think this is for the net devices for nodes that make up the lte core
-   // for example, the pgw should have its own buffer
-   Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
-   Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
-   Config::SetDefault ("ns3::LteRlcUmLowLat::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
-
-   // TCP settings
-   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpCubic::GetTypeId ()));
-   Config::SetDefault ("ns3::TcpSocketBase::MinRto", TimeValue (MilliSeconds (200)));
-   Config::SetDefault ("ns3::Ipv4L3Protocol::FragmentExpirationTimeout", TimeValue (Seconds (0.2)));
    Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue (segmentSize));
-   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0));
-   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (131072*400));
-   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (131072*400));
+   Config::SetDefault("ns3::TcpSocket::SndBufSize", UintegerValue (524288));
+   Config::SetDefault("ns3::TcpSocket::RcvBufSize", UintegerValue (524288));
 
    NS_LOG_INFO ("Creating mmWaveHelper.");
    Ptr<MmWaveHelper> mmwaveHelper = CreateObject<MmWaveHelper> ();
@@ -187,11 +183,19 @@ main (int argc, char *argv[])
        double dist = distRv->GetValue (MIN_DISTANCE, MAX_DISTANCE);
        uePositionAlloc->Add (Vector (dist, 0.0, 0.0));
      }
-   uemobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+//   uemobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+   uemobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                              "Mode", StringValue ("Distance"),
+                              "Distance", StringValue ("100.0"),
+                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=50.0]"),
+                              "Bounds", StringValue ("0|200|0|200"));
+
    uemobility.SetPositionAllocator (uePositionAlloc);
    uemobility.Install (ueNodes);
 
-   uemobility.Install (remoteHost); // added this
+   MobilityHelper remoteHostMobility;
+   remoteHostMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+   remoteHostMobility.Install (remoteHost); // added this
 
    NS_LOG_INFO ("Installing mmWave devices.");
    // Install mmWave Devices to the nodes
@@ -296,6 +300,9 @@ main (int argc, char *argv[])
    //mmwaveHelper->EnableTraces ();
    // Uncomment to enable PCAP tracing
    //p2p.EnablePcapAll ("lte-dash");
+
+   Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
+                    MakeCallback (&CourseChange));
 
    NS_LOG_INFO ("Run Simulation.");
    //NS_LOG_INFO ("Sim: " << simulationId << "Clients: " << numberOfClients);

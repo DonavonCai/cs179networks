@@ -69,9 +69,14 @@ line = throughputLog.readline()
 line = throughputLog.readline()
 while line:
   timeNow, bandwidth = line.split()
-#bandwidth = str(float(bandwidth) / 1000)
-  throughputX.append(float(timeNow))
-  throughputY.append(int(bandwidth))
+  timeNow = float(timeNow)
+  bandwidth = int(bandwidth)
+
+  if (timeNow in throughputX):
+    throughputY[throughputX.index(timeNow)] += bandwidth
+  else:
+    throughputX.append(timeNow)
+    throughputY.append(bandwidth)
   line = throughputLog.readline()
 throughputLog.close()
 

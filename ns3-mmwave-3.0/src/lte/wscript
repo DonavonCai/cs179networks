@@ -340,6 +340,9 @@ def build(bld):
         'model/component-carrier-ue.h',
         'model/component-carrier-enb.h'
         ]
+    def build(bld):
+        obj = bld.create_ns3_program('lte-dash', ['dash', 'internet', 'applications', 'point-to-point', 'lte'])
+        obj.source = 'lte.cc'
 
     if (bld.env['ENABLE_EMU']):
         module.source.append ('helper/emu-epc-helper.cc')
