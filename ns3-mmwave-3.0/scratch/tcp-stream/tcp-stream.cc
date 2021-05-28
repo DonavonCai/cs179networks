@@ -135,7 +135,7 @@ main (int argc, char *argv[])
 
   /* Set up WAN link between server node and access point*/
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("100000kb/s")); // This must not be more than the maximum throughput in 802.11n
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("100kb/s"/*"100000kb/s"*/)); // This must not be more than the maximum throughput in 802.11n
   p2p.SetDeviceAttribute ("Mtu", UintegerValue (1500));
   p2p.SetChannelAttribute ("Delay", StringValue ("45ms"));
   NetDeviceContainer wanIpDevices;

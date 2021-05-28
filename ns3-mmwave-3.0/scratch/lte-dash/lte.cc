@@ -97,16 +97,16 @@ main (int argc, char *argv[])
 
    // I think this is for the net devices for nodes that make up the lte core
    // for example, the pgw should have its own buffer
-   Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
-   Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
-   Config::SetDefault ("ns3::LteRlcUmLowLat::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+//   Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+//   Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+//   Config::SetDefault ("ns3::LteRlcUmLowLat::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
 
    // TCP settings
    Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpCubic::GetTypeId ()));
    Config::SetDefault ("ns3::TcpSocketBase::MinRto", TimeValue (MilliSeconds (200)));
    Config::SetDefault ("ns3::Ipv4L3Protocol::FragmentExpirationTimeout", TimeValue (Seconds (0.2)));
    Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue (segmentSize));
-   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0));
+   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (2));
    Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (131072*400));
    Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (131072*400));
 
@@ -293,9 +293,9 @@ main (int argc, char *argv[])
        clientApps.Get (i)->SetStartTime (Seconds (startTime));
      }
    */
-   //mmwaveHelper->EnableTraces ();
+   mmwaveHelper->EnableTraces ();
    // Uncomment to enable PCAP tracing
-   //p2p.EnablePcapAll ("lte-dash");
+   p2p.EnablePcapAll ("lte-dash");
 
    NS_LOG_INFO ("Run Simulation.");
    //NS_LOG_INFO ("Sim: " << simulationId << "Clients: " << numberOfClients);
