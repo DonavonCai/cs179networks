@@ -135,7 +135,7 @@ main (int argc, char *argv[])
 
   /* Set up WAN link between server node and access point*/
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("100kb/s"/*"100000kb/s"*/)); // This must not be more than the maximum throughput in 802.11n
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("100000kb/s")); // This must not be more than the maximum throughput in 802.11n
   p2p.SetDeviceAttribute ("Mtu", UintegerValue (1500));
   p2p.SetChannelAttribute ("Delay", StringValue ("45ms"));
   NetDeviceContainer wanIpDevices;
@@ -276,14 +276,12 @@ main (int argc, char *argv[])
   clientHelper.SetAttribute ("NumberOfClients", UintegerValue(numberOfClients));
   clientHelper.SetAttribute ("SimulationId", UintegerValue (simulationId));
   ApplicationContainer clientApps = clientHelper.Install (clients);
-  clientApps.Start (Seconds (1.5));
-  /*
+
   for (uint i = 0; i < clientApps.GetN (); i++)
     {
       double startTime = 2.0 + ((i * 3) / 100.0);
       clientApps.Get (i)->SetStartTime (Seconds (startTime));
     }
-  */
 
   NS_LOG_INFO ("Run Simulation.");
   NS_LOG_INFO ("Sim: " << simulationId << "Clients: " << numberOfClients);

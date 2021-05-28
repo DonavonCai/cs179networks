@@ -72,9 +72,7 @@ while line:
   timeNow = float(timeNow)
   bandwidth = int(bandwidth)
 
-  if (timeNow in throughputX):
-    throughputY[throughputX.index(timeNow)] += bandwidth
-  else:
+  if (timeNow not in throughputX):
     throughputX.append(timeNow)
     throughputY.append(bandwidth)
   line = throughputLog.readline()
