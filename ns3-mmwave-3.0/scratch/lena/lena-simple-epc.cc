@@ -134,6 +134,9 @@ main (int argc, char *argv[])
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
+// SET NUMBER OF ENBS == NUMBER OF CLIENTS
+  numberOfNodes = numberOfClients;
+
   NodeContainer ueNodes;
   NodeContainer enbNodes;
   enbNodes.Create(numberOfNodes);
