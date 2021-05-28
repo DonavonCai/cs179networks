@@ -48,7 +48,7 @@ int
 main (int argc, char *argv[])
 {
   uint16_t numberOfNodes = 1;
-  Time simTime = Seconds (300);
+  Time simTime = Seconds (150);
   double distance = 60.0;
   Time interPacketInterval = MilliSeconds (100);
   bool useCa = false;
@@ -91,6 +91,13 @@ main (int argc, char *argv[])
 
   // configs
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1446));
+
+  Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+  Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+  Config::SetDefault ("ns3::LteRlcUmLowLat::MaxTxBufferSize", UintegerValue (10 * 1024 * 1024));
+
+  Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (131072 *400 ));
+  Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (131072 *400 ));
 
   if (useCa)
    {
